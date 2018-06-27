@@ -7,7 +7,7 @@ module.exports = function(grunt) {
                 sourceMap: true
             },
             dist: {
-                dest: 'dist/dform.js',
+                dest: 'dist/json_editor.js',
                 src: [
                     // License & version info, start the containing closure
                     'src/intro.js',
@@ -68,7 +68,7 @@ module.exports = function(grunt) {
         },
         uglify: {
             dist: {
-                src: 'dist/dform.js',
+                src: 'dist/json_editor.js',
                 dest: 'dist/dform.min.js'
             },
             options: {
@@ -131,7 +131,7 @@ module.exports = function(grunt) {
                     undef: true
                 },
                 files: {
-                    src: ['dist/dform.js']
+                    src: ['dist/json_editor.js']
                 }
             }
         }

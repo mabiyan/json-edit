@@ -2,29 +2,36 @@
  * 所有的编辑器都应该从这个类扩展
  */
 JSONEditor.AbstractEditor = Class.extend({
+    //在子编辑器改变时候
     onChildEditorChange: function(editor) {
         this.onChange(true);
     },
+    //公布
     notify: function() {
         this.jsoneditor.notifyWatchers(this.path);
     },
+    //改变
     change: function() {
         if (this.parent) this.parent.onChildEditorChange(this);
         else this.jsoneditor.onChange();
     },
+    //在改变的时候
     onChange: function(bubble) {
         this.notify();
         if (this.watch_listener) this.watch_listener();
         if (bubble) this.change();
     },
+    //注册
     register: function() {
         this.jsoneditor.registerEditor(this);
         this.onChange();
     },
+    //销毁
     unregister: function() {
         if (!this.jsoneditor) return;
         this.jsoneditor.unregisterEditor(this);
     },
+    //
     getNumColumns: function() {
         return 12;
     },

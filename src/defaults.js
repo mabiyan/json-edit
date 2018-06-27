@@ -1,13 +1,17 @@
 // Set the default theme
+// 设置默认主题
 JSONEditor.defaults.theme = 'html';
 
 // Set the default template engine
+// 设置默认模板引擎
 JSONEditor.defaults.template = 'default';
 
 // Default options when initializing JSON Editor
+// 初始化JSON Editor的默认选项
 JSONEditor.defaults.options = {};
 
 // String translate function
+// 字符串转换函数
 JSONEditor.defaults.translate = function(key, variables) {
     var lang = JSONEditor.defaults.languages[JSONEditor.defaults.language];
     if (!lang) throw "Unknown language " + JSONEditor.defaults.language;
@@ -26,56 +30,77 @@ JSONEditor.defaults.translate = function(key, variables) {
 };
 
 // Translation strings and default languages
+// 翻译字符串和默认语言
 JSONEditor.defaults.default_language = 'en';
 JSONEditor.defaults.language = JSONEditor.defaults.default_language;
 JSONEditor.defaults.languages.en = {
     /**
      * When a property is not set
+     * 当一个属性没有设置时
      */
-    error_notset: "Property must be set",
+    //error_notset: "Property must be set",
+    error_notset: "属性必须设置",
     /**
      * When a string must not be empty
+     *     当一个字符串不能是空的
      */
     // error_notempty: "Value required",
     error_notempty: "属性必填",
     /**
      * When a value is not one of the enumerated values
+     *     当值不是枚举值之一时
      */
     //error_enum: "Value must be one of the enumerated values",
     error_enum: "不支持的值",
     /**
      * When a value doesn't validate any schema of a 'anyOf' combination
+     *     当一个值不验证任何“anyOf”组合的模式时
      */
-    error_anyOf: "Value must validate against at least one of the provided schemas",
+    //error_anyOf: "Value must validate against at least one of the provided schemas",
+    error_anyOf: "值必须对至少一个提供的模式进行验证",
     /**
      * When a value doesn't validate
+     *     当一个值不验证时
      * @variables This key takes one variable: The number of schemas the value does not validate
+     *     @variables 这个键接受一个变量：值不验证的模式的数量
      */
-    error_oneOf: 'Value must validate against exactly one of the provided schemas. It currently validates against {{0}} of the schemas.',
+    //error_oneOf: 'Value must validate against exactly one of the provided schemas. It currently validates against {{0}} of the schemas.',
+    error_oneOf: '值必须对所提供的模式之一进行验证。它现在验证模式的0。',
     /**
      * When a value does not validate a 'not' schema
+     *     当一个值不验证“not”模式时
      */
-    error_not: "Value must not validate against the provided schema",
+    //: "Value must not validate against the provided schema",
+    error_not: "值不能根据所提供的模式进行验证",
     /**
      * When a value does not match any of the provided types
+     *     当一个值与所提供的任何类型不匹配时
      */
-    error_type_union: "Value must be one of the provided types",
+    //error_type_union: "Value must be one of the provided types",
+    error_type_union: "值必须是提供的类型之一",
     /**
      * When a value does not match the given type
+     *     当一个值与给定的类型不匹配时
      * @variables This key takes one variable: The type the value should be of
+     *     @variables 这个键接受一个变量：值应该是什么类型
      */
-    error_type: "Value must be of type {{0}}",
+    //error_type: "Value must be of type {{0}}",
+    error_type: "值必须是 {{0}} 类型",
     /**
      *  When the value validates one of the disallowed types
+     *      当值验证一个不允许的类型时
      */
-    error_disallow_union: "Value must not be one of the provided disallowed types",
+    //error_disallow_union: "Value must not be one of the provided disallowed types",
+    error_disallow_union: "值不应该是被提供的不允许的类型之一",
     /**
      *  When the value validates a disallowed type
+     *      当值验证一个不允许的类型时
      * @variables This key takes one variable: The type the value should not be of
+     *       @variables 这个键接受一个变量：值不应该是
      */
-    error_disallow: "Value must not be of type {{0}}",
+    error_disallow: "值不应该是 {{0}} 类型",
     /**
-     * When a value is not a multiple of or divisible by a given number
+     * 当一个值不是一个倍数或者被一个给定的数整除时
      * @variables This key takes one variable: The number mentioned above
      */
     error_multipleOf: "Value must be a multiple of {{0}}",

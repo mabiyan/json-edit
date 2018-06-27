@@ -12,31 +12,37 @@
 (function() {
 
 /*jshint loopfunc: true */
-/* Simple JavaScript Inheritance
+/* 简单的JavaScript继承
  * By John Resig http://ejohn.org/
  * MIT Licensed.
  */
-// Inspired by base2 and Prototype
+// 受到base2和Prototype的启发
 var Class;
 (function(){
   var initializing = false, fnTest = /xyz/.test(function(){window.postMessage("xyz");}) ? /\b_super\b/ : /.*/;
  
   // The base Class implementation (does nothing)
+  // 基类实现（什么都不做）
   Class = function(){};
  
   // Create a new Class that inherits from this class
+  // 创建一个继承自该类的新类
   Class.extend = function extend(prop) {
     var _super = this.prototype;
    
     // Instantiate a base class (but only create the instance,
     // don't run the init constructor)
+    // 实例化一个基类（但只创建实例，
+    // 不要运行init构造器）
     initializing = true;
     var prototype = new this();
     initializing = false;
    
     // Copy the properties over onto the new prototype
+    // 将属性复制到新原型上
     for (var name in prop) {
       // Check if we're overwriting an existing function
+      // 检查我们是否在重写现有的函数
       prototype[name] = typeof prop[name] == "function" &&
         typeof _super[name] == "function" && fnTest.test(prop[name]) ?
         (function(name, fn){
@@ -45,10 +51,14 @@ var Class;
            
             // Add a new ._super() method that is the same method
             // but on the super-class
+            // 添加一个新的.super（）方法，它是相同的方法，
+            // 但是在超级类上
             this._super = _super[name];
            
-            // The method only need to be bound temporarily, so we
-            // remove it when we're done executing
+            // The method only need to be bound temporarily,
+            //  so we remove it when we're done executing
+            // 这个方法只需要临时绑定，
+            // 所以当我们执行的时候，我们就删除它
             var ret = fn.apply(this, arguments);        
             this._super = tmp;
            
@@ -59,19 +69,24 @@ var Class;
     }
    
     // The dummy class constructor
+    // 虚拟类构造函数
     function Class() {
       // All construction is actually done in the init method
+      // 所有的构建都是在init方法中完成的
       if ( !initializing && this.init )
         this.init.apply(this, arguments);
     }
    
     // Populate our constructed prototype object
+    // 填充我们构建的原型对象
     Class.prototype = prototype;
    
     // Enforce the constructor to be what we expect
+    // 执行构造函数，使之成为我们所期望的
     Class.prototype.constructor = Class;
  
     // And make this class extendable
+    // 使这个类可扩展
     Class.extend = extend;
    
     return Class;
@@ -213,7 +228,7 @@ var $triggerc = function(el,event) {
 
 var JSONEditor = function(element, options) {
     if (!(element instanceof Element)) {
-        throw new Error('element should be an instance of Element');
+        throw new Error('element 应该是 Element 的一个实例 ');
     }
     options = $extend({}, JSONEditor.defaults.options, options || {});
     this.element = element;
@@ -223,6 +238,9 @@ var JSONEditor = function(element, options) {
 JSONEditor.prototype = {
     // necessary since we remove the ctor property by doing a literal assignment. Without this
     // the $isplainobject function will think that this is a plain object.
+    // 
+    // 因为我们通过做一个文字作业来移除ctor的属性。没有这个
+    // $isplainobject 函数会认为这是一个普通的对象。
     constructor: JSONEditor,
     init: function() {
         var self = this;
@@ -289,12 +307,29 @@ JSONEditor.prototype = {
         });
     },
     getValue: function() {
-        if (!this.ready) throw "JSON Editor not ready yet.  Listen for 'ready' event before getting the value";
+        if (!this.ready) throw "JSON Editor 还没有准备好。在获得值之前，先听“ready”事件";
 
         return this.root.getValue();
     },
+    // 元素高亮显示
+    setElementHighlight: function(dynamic_content_id, attr, value){
+        if (!this.ready) throw "JSON Editor 还没有准备好。在获得值之前，先听“ready”事件";
+        var dynamic_content = document.getElementById(dynamic_content_id);
+        var aElements=dynamic_content.getElementsByTagName("div");
+        for(var i=0;i<aElements.length;i++){
+            if(aElements[i].getAttribute(attr)==value){
+                if(!aElements[i].className.match( new RegExp( "(\\s|^)" + "div-highlight" + "(\\s|$)"))){
+                    aElements[i].className += ' '+'div-highlight';
+                }
+            }else{
+                if(aElements[i].className.match( new RegExp( "(\\s|^)" + "div-highlight" + "(\\s|$)"))){
+                    aElements[i].className = aElements[i].className.replace( new RegExp( "(\\s|^)" + "div-highlight" + "(\\s|$)" ),"" );
+                }
+            }
+        }
+    },
     getFormValue: function() {
-        if (!this.ready) throw "JSON Editor not ready yet.  Listen for 'ready' event before getting the value";
+        if (!this.ready) throw "JSON Editor 还没有准备好。在获得值之前，先听“ready”事件";
         //定制版本的getValue，主要是处理字段分组数据结构解包
         //先克隆一份，避免影响表单逻辑
         var cloneOfValue = JSON.parse(JSON.stringify(this.root.getValue()));
@@ -310,13 +345,13 @@ JSONEditor.prototype = {
         return cloneOfValue;
     },
     setValue: function(value) {
-        if (!this.ready) throw "JSON Editor not ready yet.  Listen for 'ready' event before setting the value";
+        if (!this.ready) throw "JSON Editor 还没有准备好。在获得值之前，先听“ready”事件";
 
         this.root.setValue(value);
         return this;
     },
     setFormValue: function(value){
-        if (!this.ready) throw "JSON Editor not ready yet.  Listen for 'ready' event before setting the value";
+        if (!this.ready) throw "JSON Editor 还没有准备好。在获得值之前，先听“ready”事件";
         //定制版setValue，对应getFormValue的值，处理表单中包含分组值的情况
         if(this.schema&&this.schema.properties){
             var props = this.schema.properties;
@@ -334,8 +369,9 @@ JSONEditor.prototype = {
         this.root.setValue(value);
         return this;
     },
+    // 验证
     validate: function(value) {
-        if (!this.ready) throw "JSON Editor not ready yet.  Listen for 'ready' event before validating";
+        if (!this.ready) throw "JSON Editor 还没有准备好。在获得值之前，先听“ready”事件";
 
         // Custom value
         if (arguments.length === 1) {
@@ -347,7 +383,7 @@ JSONEditor.prototype = {
         }
     },
     getPropTitle: function(path){
-        if (!this.ready) throw "JSON Editor not ready yet.  Listen for 'ready' event before validating";
+        if (!this.ready) throw "JSON Editor 还没有准备好。在获得值之前，先听“ready”事件";
 
         //定制方法，根据path路径root.xxx.xxx获取属性的title值。主要用户表单验证是提供字段名，拼接校验信息
         var pathPropArray = path.split(".");
@@ -369,6 +405,7 @@ JSONEditor.prototype = {
         }
         return propTitle;
     },
+    //销毁
     destroy: function() {
         if (this.destroyed) return;
         if (!this.ready) return;
@@ -389,6 +426,7 @@ JSONEditor.prototype = {
 
         this.destroyed = true;
     },
+    // 开启
     on: function(event, callback) {
         this.callbacks = this.callbacks || {};
         this.callbacks[event] = this.callbacks[event] || [];
@@ -396,6 +434,7 @@ JSONEditor.prototype = {
 
         return this;
     },
+    // 离开
     off: function(event, callback) {
         // Specific callback
         if (event && callback) {
@@ -420,6 +459,7 @@ JSONEditor.prototype = {
 
         return this;
     },
+    // 触发
     trigger: function(event) {
         if (this.callbacks && this.callbacks[event] && this.callbacks[event].length) {
             for (var i = 0; i < this.callbacks[event].length; i++) {
@@ -429,6 +469,7 @@ JSONEditor.prototype = {
 
         return this;
     },
+    // 设置选项
     setOption: function(option, value) {
         if (option === "show_errors") {
             this.options.show_errors = value;
@@ -441,6 +482,7 @@ JSONEditor.prototype = {
 
         return this;
     },
+    //获得编辑器样式
     getEditorClass: function(schema) {
         var classname;
 
@@ -461,10 +503,12 @@ JSONEditor.prototype = {
 
         return JSONEditor.defaults.editors[classname];
     },
+    // 创建样式
     createEditor: function(editor_class, options) {
         options = $extend({}, editor_class.options || {}, options);
         return new editor_class(options);
     },
+    // 在改变的时候
     onChange: function() {
         if (!this.ready) return;
 
@@ -492,6 +536,7 @@ JSONEditor.prototype = {
 
         return this;
     },
+    // 编译模板
     compileTemplate: function(template, name) {
         name = name || JSONEditor.defaults.template;
 
@@ -514,6 +559,7 @@ JSONEditor.prototype = {
 
         return engine.compile(template);
     },
+    // 
     _data: function(el, key, value) {
         // Setting data
         if (arguments.length === 3) {
@@ -535,20 +581,24 @@ JSONEditor.prototype = {
             return this.__data[el.getAttribute('data-jsoneditor-' + key)];
         }
     },
+    // 注册编辑器
     registerEditor: function(editor) {
         this.editors = this.editors || {};
         this.editors[editor.path] = editor;
         return this;
     },
+    // 销毁编辑器
     unregisterEditor: function(editor) {
         this.editors = this.editors || {};
         this.editors[editor.path] = null;
         return this;
     },
+    // 获得编辑器
     getEditor: function(path) {
         if (!this.editors) return;
         return this.editors[path];
     },
+    // 监控
     watch: function(path, callback) {
         this.watchlist = this.watchlist || {};
         this.watchlist[path] = this.watchlist[path] || [];
@@ -556,6 +606,7 @@ JSONEditor.prototype = {
 
         return this;
     },
+    // 不监控
     unwatch: function(path, callback) {
         if (!this.watchlist || !this.watchlist[path]) return this;
         // If removing all callbacks for a path
@@ -572,21 +623,26 @@ JSONEditor.prototype = {
         this.watchlist[path] = newlist.length ? newlist : null;
         return this;
     },
+    //
     notifyWatchers: function(path) {
         if (!this.watchlist || !this.watchlist[path]) return this;
         for (var i = 0; i < this.watchlist[path].length; i++) {
             this.watchlist[path][i]();
         }
     },
+    // 是否启动
     isEnabled: function() {
         return !this.root || this.root.isEnabled();
     },
+    // 启动
     enable: function() {
         this.root.enable();
     },
+    // 销毁
     disable: function() {
         this.root.disable();
     },
+    // 获得
     _getDefinitions: function(schema, path) {
         path = path || '#/definitions/';
         if (schema.definitions) {
@@ -1440,35 +1496,43 @@ JSONEditor.Validator = Class.extend({
 });
 
 /**
- * All editors should extend from this class
+ * 所有的编辑器都应该从这个类扩展
  */
 JSONEditor.AbstractEditor = Class.extend({
+    //在子编辑器改变时候
     onChildEditorChange: function(editor) {
         this.onChange(true);
     },
+    //公布
     notify: function() {
         this.jsoneditor.notifyWatchers(this.path);
     },
+    //改变
     change: function() {
         if (this.parent) this.parent.onChildEditorChange(this);
         else this.jsoneditor.onChange();
     },
+    //在改变的时候
     onChange: function(bubble) {
         this.notify();
         if (this.watch_listener) this.watch_listener();
         if (bubble) this.change();
     },
+    //注册
     register: function() {
         this.jsoneditor.registerEditor(this);
         this.onChange();
     },
+    //销毁
     unregister: function() {
         if (!this.jsoneditor) return;
         this.jsoneditor.unregisterEditor(this);
     },
+    //
     getNumColumns: function() {
         return 12;
     },
+    // 初始化
     init: function(options) {
         this.jsoneditor = options.jsoneditor;
 
@@ -1504,9 +1568,11 @@ JSONEditor.AbstractEditor = Class.extend({
     preBuild: function() {
 
     },
+    //绑定
     build: function() {
 
     },
+    //post绑定
     postBuild: function() {
         this.setupWatchListeners();
         this.addLinks();
@@ -1515,7 +1581,7 @@ JSONEditor.AbstractEditor = Class.extend({
         this.register();
         this.onWatchedFieldChange();
     },
-
+    //安装观察监听器
     setupWatchListeners: function() {
         var self = this;
 
@@ -1566,7 +1632,7 @@ JSONEditor.AbstractEditor = Class.extend({
             this.header_template = this.jsoneditor.compileTemplate(this.schema.headerTemplate, this.template_engine);
         }
     },
-
+    //添加链接集
     addLinks: function() {
         // Add links
         if (!this.no_link_holder) {
@@ -1579,8 +1645,7 @@ JSONEditor.AbstractEditor = Class.extend({
             }
         }
     },
-
-
+    //获得按钮
     getButton: function(text, icon, title) {
         var btnClass = 'json-editor-btn-' + icon;
         if (!this.iconlib) icon = null;
@@ -1595,6 +1660,7 @@ JSONEditor.AbstractEditor = Class.extend({
         btn.className += ' ' + btnClass + ' ';
         return btn;
     },
+    //设置按钮文本
     setButtonText: function(button, text, icon, title) {
         if (!this.iconlib) icon = null;
         else icon = this.iconlib.getIcon(icon);
@@ -1606,9 +1672,11 @@ JSONEditor.AbstractEditor = Class.extend({
 
         return this.theme.setButtonText(button, text, icon, title);
     },
+    //添加链接
     addLink: function(link) {
         if (this.link_holder) this.link_holder.appendChild(link);
     },
+    //获得链接
     getLink: function(data) {
         var holder, link;
 
@@ -1692,6 +1760,7 @@ JSONEditor.AbstractEditor = Class.extend({
 
         return holder;
     },
+    //刷新观察字段值
     refreshWatchedFieldValues: function() {
         if (!this.watched_values) return;
         var watched = {};
@@ -1716,9 +1785,11 @@ JSONEditor.AbstractEditor = Class.extend({
 
         return changed;
     },
+    //获得观察字段值
     getWatchedFieldValues: function() {
         return this.watched_values;
     },
+    //修改头部文本
     updateHeaderText: function() {
         if (this.header) {
             // If the header has children, only update the text node's value
@@ -1736,11 +1807,13 @@ JSONEditor.AbstractEditor = Class.extend({
             }
         }
     },
+    //获得头部文本
     getHeaderText: function(title_only) {
         if (this.header_text) return this.header_text;
         else if (title_only) return this.schema.title;
         else return this.getTitle();
     },
+    //观察字段改变
     onWatchedFieldChange: function() {
         var vars;
         if (this.header_template) {
@@ -1767,18 +1840,23 @@ JSONEditor.AbstractEditor = Class.extend({
             }
         }
     },
+    //设置值
     setValue: function(value) {
         this.value = value;
     },
+    //获得值
     getValue: function() {
         return this.value;
     },
+    //刷新值
     refreshValue: function() {
 
     },
+    //获得子编辑器
     getChildEditors: function() {
         return false;
     },
+    //销毁
     destroy: function() {
         var self = this;
         this.unregister(this);
@@ -1799,6 +1877,7 @@ JSONEditor.AbstractEditor = Class.extend({
         this.key = null;
         this.parent = null;
     },
+    //获得默认
     getDefault: function() {
         if (this.schema["default"]) return this.schema["default"];
         if (this.schema["enum"]) return this.schema["enum"][0];
@@ -1819,33 +1898,40 @@ JSONEditor.AbstractEditor = Class.extend({
 
         return null;
     },
+    //获得标题
     getTitle: function() {
         return this.schema.title || this.key;
     },
+    //获得标题样式
     getTitleClass: function() {
-        return this.schema.titleClass;
+        return this.schema.titleClass ? this.schema.titleClass : "";
     },
+    //启动
     enable: function() {
         this.disabled = false;
     },
+    //禁用
     disable: function() {
         this.disabled = true;
     },
+    //是否启用
     isEnabled: function() {
         return !this.disabled;
     },
+    //是否必须
     isRequired: function() {
         if (typeof this.schema.required === "boolean") return this.schema.required;
         else if (this.parent && this.parent.schema && Array.isArray(this.parent.schema.required)) return this.parent.schema.required.indexOf(this.key) > -1;
         else if (this.jsoneditor.options.required_by_default) return true;
         else return false;
     },
+    //获得描述文本
     getDisplayText: function(arr) {
         var disp = [];
         var used = {};
 
-        // Determine how many times each attribute name is used.
-        // This helps us pick the most distinct display text for the schemas.
+        // 确定每个属性名使用了多少次。
+        // 这有助于我们为模式选择最独特的显示文本。
         $each(arr, function(i, el) {
             if (el.title) {
                 used[el.title] = used[el.title] || 0;
@@ -1865,13 +1951,13 @@ JSONEditor.AbstractEditor = Class.extend({
             }
         });
 
-        // Determine display text for each element of the array
+        // 为阵列的每个元素确定显示文本
         $each(arr, function(i, el) {
             var name;
 
-            // If it's a simple string
+            // 如果它是一个简单的字符串
             if (typeof el === "string") name = el;
-            // Object
+            // 对象
             else if (el.title && used[el.title] <= 1) name = el.title;
             else if (el.format && used[el.format] <= 1) name = el.format;
             else if (el.type && used[el.type] <= 1) name = el.type;
@@ -1886,7 +1972,7 @@ JSONEditor.AbstractEditor = Class.extend({
             disp.push(name);
         });
 
-        // Replace identical display text with "text 1", "text 2", etc.
+        // 将相同的显示文本替换为 "text 1", "text 2", 等.
         var inc = {};
         $each(disp, function(i, name) {
             inc[name] = inc[name] || 0;
@@ -2202,6 +2288,7 @@ JSONEditor.defaults.editors.string = JSONEditor.AbstractEditor.extend({
       this.refreshValue();
     }
   },
+  //启动
   enable: function() {
     if(!this.always_disabled) {
       this.input.disabled = false;
@@ -2209,11 +2296,13 @@ JSONEditor.defaults.editors.string = JSONEditor.AbstractEditor.extend({
     }
     this._super();
   },
+  //销毁
   disable: function() {
     this.input.disabled = true;
     // TODO: WYSIWYG and Markdown editors
     this._super();
   },
+  //
   afterInputReady: function() {
     var self = this, options;
     
@@ -2307,11 +2396,13 @@ JSONEditor.defaults.editors.string = JSONEditor.AbstractEditor.extend({
     
     self.theme.afterInputReady(self.input);
   },
+  //重新刷新值
   refreshValue: function() {
     this.value = this.input.value;
     if(typeof this.value !== "string") this.value = '';
     this.serialized = this.value;
   },
+  //销毁
   destroy: function() {
     // If using SCEditor, destroy the editor instance
     if(this.sceditor_instance) {
@@ -4958,7 +5049,7 @@ JSONEditor.defaults.editors.select = JSONEditor.AbstractEditor.extend({
     }
     // Boolean
     else if(this.schema.type === "boolean") {
-      self.enum_display = this.schema.options && this.schema.options.enum_titles || ['true','false'];
+      self.enum_display = this.schema.options && this.schema.options.enum_titles || ['是','否'];
       self.enum_options = ['1',''];
       self.enum_values = [true,false];
       
@@ -4967,7 +5058,7 @@ JSONEditor.defaults.editors.select = JSONEditor.AbstractEditor.extend({
         self.enum_options.unshift('undefined');
         self.enum_values.unshift(undefined);
       }
-    
+      
     }
     // Dynamic Enum
     else if(this.schema.enumSource) {
@@ -5311,7 +5402,7 @@ JSONEditor.defaults.editors.selectize = JSONEditor.AbstractEditor.extend({
     }
     // Boolean
     else if(this.schema.type === "boolean") {
-      self.enum_display = this.schema.options && this.schema.options.enum_titles || ['true','false'];
+      self.enum_display = this.schema.options && this.schema.options.enum_titles || ['是','否'];
       self.enum_options = ['1','0'];
       self.enum_values = [true,false];
     }
@@ -6310,7 +6401,8 @@ JSONEditor.AbstractTheme = Class.extend({
   },
   getMultiCheckboxHolder: function(controls,label,description) {
     var el = document.createElement('div');
-
+    var control = document.createElement('div');
+    el.className += " checkbox-border";
     if(label) {
       label.style.display = 'block';
       el.appendChild(label);
@@ -6320,9 +6412,9 @@ JSONEditor.AbstractTheme = Class.extend({
       if(!controls.hasOwnProperty(i)) continue;
       controls[i].style.display = 'inline-block';
       controls[i].style.marginRight = '20px';
-      el.appendChild(controls[i]);
+      control.appendChild(controls[i]);
     }
-
+    el.appendChild(control);
     if(description) el.appendChild(description);
 
     return el;
@@ -7771,15 +7863,19 @@ JSONEditor.defaults.templates.underscore = function() {
 };
 
 // Set the default theme
+// 设置默认主题
 JSONEditor.defaults.theme = 'html';
 
 // Set the default template engine
+// 设置默认模板引擎
 JSONEditor.defaults.template = 'default';
 
 // Default options when initializing JSON Editor
+// 初始化JSON Editor的默认选项
 JSONEditor.defaults.options = {};
 
 // String translate function
+// 字符串转换函数
 JSONEditor.defaults.translate = function(key, variables) {
     var lang = JSONEditor.defaults.languages[JSONEditor.defaults.language];
     if (!lang) throw "Unknown language " + JSONEditor.defaults.language;
@@ -7798,56 +7894,77 @@ JSONEditor.defaults.translate = function(key, variables) {
 };
 
 // Translation strings and default languages
+// 翻译字符串和默认语言
 JSONEditor.defaults.default_language = 'en';
 JSONEditor.defaults.language = JSONEditor.defaults.default_language;
 JSONEditor.defaults.languages.en = {
     /**
      * When a property is not set
+     * 当一个属性没有设置时
      */
-    error_notset: "Property must be set",
+    //error_notset: "Property must be set",
+    error_notset: "属性必须设置",
     /**
      * When a string must not be empty
+     *     当一个字符串不能是空的
      */
     // error_notempty: "Value required",
     error_notempty: "属性必填",
     /**
      * When a value is not one of the enumerated values
+     *     当值不是枚举值之一时
      */
     //error_enum: "Value must be one of the enumerated values",
     error_enum: "不支持的值",
     /**
      * When a value doesn't validate any schema of a 'anyOf' combination
+     *     当一个值不验证任何“anyOf”组合的模式时
      */
-    error_anyOf: "Value must validate against at least one of the provided schemas",
+    //error_anyOf: "Value must validate against at least one of the provided schemas",
+    error_anyOf: "值必须对至少一个提供的模式进行验证",
     /**
      * When a value doesn't validate
+     *     当一个值不验证时
      * @variables This key takes one variable: The number of schemas the value does not validate
+     *     @variables 这个键接受一个变量：值不验证的模式的数量
      */
-    error_oneOf: 'Value must validate against exactly one of the provided schemas. It currently validates against {{0}} of the schemas.',
+    //error_oneOf: 'Value must validate against exactly one of the provided schemas. It currently validates against {{0}} of the schemas.',
+    error_oneOf: '值必须对所提供的模式之一进行验证。它现在验证模式的0。',
     /**
      * When a value does not validate a 'not' schema
+     *     当一个值不验证“not”模式时
      */
-    error_not: "Value must not validate against the provided schema",
+    //: "Value must not validate against the provided schema",
+    error_not: "值不能根据所提供的模式进行验证",
     /**
      * When a value does not match any of the provided types
+     *     当一个值与所提供的任何类型不匹配时
      */
-    error_type_union: "Value must be one of the provided types",
+    //error_type_union: "Value must be one of the provided types",
+    error_type_union: "值必须是提供的类型之一",
     /**
      * When a value does not match the given type
+     *     当一个值与给定的类型不匹配时
      * @variables This key takes one variable: The type the value should be of
+     *     @variables 这个键接受一个变量：值应该是什么类型
      */
-    error_type: "Value must be of type {{0}}",
+    //error_type: "Value must be of type {{0}}",
+    error_type: "值必须是 {{0}} 类型",
     /**
      *  When the value validates one of the disallowed types
+     *      当值验证一个不允许的类型时
      */
-    error_disallow_union: "Value must not be one of the provided disallowed types",
+    //error_disallow_union: "Value must not be one of the provided disallowed types",
+    error_disallow_union: "值不应该是被提供的不允许的类型之一",
     /**
      *  When the value validates a disallowed type
+     *      当值验证一个不允许的类型时
      * @variables This key takes one variable: The type the value should not be of
+     *       @variables 这个键接受一个变量：值不应该是
      */
-    error_disallow: "Value must not be of type {{0}}",
+    error_disallow: "值不应该是 {{0}} 类型",
     /**
-     * When a value is not a multiple of or divisible by a given number
+     * 当一个值不是一个倍数或者被一个给定的数整除时
      * @variables This key takes one variable: The number mentioned above
      */
     error_multipleOf: "Value must be a multiple of {{0}}",
@@ -8165,4 +8282,4 @@ JSONEditor.defaults.resolvers.unshift(function(schema) {
   window.JSONEditor = JSONEditor;
 })();
 
-//# sourceMappingURL=dform.js.map
+//# sourceMappingURL=json_editor.js.map

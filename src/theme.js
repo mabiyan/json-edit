@@ -92,7 +92,8 @@ JSONEditor.AbstractTheme = Class.extend({
   },
   getMultiCheckboxHolder: function(controls,label,description) {
     var el = document.createElement('div');
-
+    var control = document.createElement('div');
+    el.className += " checkbox-border";
     if(label) {
       label.style.display = 'block';
       el.appendChild(label);
@@ -102,9 +103,9 @@ JSONEditor.AbstractTheme = Class.extend({
       if(!controls.hasOwnProperty(i)) continue;
       controls[i].style.display = 'inline-block';
       controls[i].style.marginRight = '20px';
-      el.appendChild(controls[i]);
+      control.appendChild(controls[i]);
     }
-
+    el.appendChild(control);
     if(description) el.appendChild(description);
 
     return el;

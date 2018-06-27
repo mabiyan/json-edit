@@ -1,6 +1,6 @@
 var JSONEditor = function(element, options) {
     if (!(element instanceof Element)) {
-        throw new Error('element should be an instance of Element');
+        throw new Error('element 应该是 Element 的一个实例 ');
     }
     options = $extend({}, JSONEditor.defaults.options, options || {});
     this.element = element;
@@ -10,6 +10,9 @@ var JSONEditor = function(element, options) {
 JSONEditor.prototype = {
     // necessary since we remove the ctor property by doing a literal assignment. Without this
     // the $isplainobject function will think that this is a plain object.
+    // 
+    // 因为我们通过做一个文字作业来移除ctor的属性。没有这个
+    // $isplainobject 函数会认为这是一个普通的对象。
     constructor: JSONEditor,
     init: function() {
         var self = this;
@@ -76,12 +79,29 @@ JSONEditor.prototype = {
         });
     },
     getValue: function() {
-        if (!this.ready) throw "JSON Editor not ready yet.  Listen for 'ready' event before getting the value";
+        if (!this.ready) throw "JSON Editor 还没有准备好。在获得值之前，先听“ready”事件";
 
         return this.root.getValue();
     },
+    // 元素高亮显示
+    setElementHighlight: function(dynamic_content_id, attr, value){
+        if (!this.ready) throw "JSON Editor 还没有准备好。在获得值之前，先听“ready”事件";
+        var dynamic_content = document.getElementById(dynamic_content_id);
+        var aElements=dynamic_content.getElementsByTagName("div");
+        for(var i=0;i<aElements.length;i++){
+            if(aElements[i].getAttribute(attr)==value){
+                if(!aElements[i].className.match( new RegExp( "(\\s|^)" + "div-highlight" + "(\\s|$)"))){
+                    aElements[i].className += ' '+'div-highlight';
+                }
+            }else{
+                if(aElements[i].className.match( new RegExp( "(\\s|^)" + "div-highlight" + "(\\s|$)"))){
+                    aElements[i].className = aElements[i].className.replace( new RegExp( "(\\s|^)" + "div-highlight" + "(\\s|$)" ),"" );
+                }
+            }
+        }
+    },
     getFormValue: function() {
-        if (!this.ready) throw "JSON Editor not ready yet.  Listen for 'ready' event before getting the value";
+        if (!this.ready) throw "JSON Editor 还没有准备好。在获得值之前，先听“ready”事件";
         //定制版本的getValue，主要是处理字段分组数据结构解包
         //先克隆一份，避免影响表单逻辑
         var cloneOfValue = JSON.parse(JSON.stringify(this.root.getValue()));
@@ -97,13 +117,13 @@ JSONEditor.prototype = {
         return cloneOfValue;
     },
     setValue: function(value) {
-        if (!this.ready) throw "JSON Editor not ready yet.  Listen for 'ready' event before setting the value";
+        if (!this.ready) throw "JSON Editor 还没有准备好。在获得值之前，先听“ready”事件";
 
         this.root.setValue(value);
         return this;
     },
     setFormValue: function(value){
-        if (!this.ready) throw "JSON Editor not ready yet.  Listen for 'ready' event before setting the value";
+        if (!this.ready) throw "JSON Editor 还没有准备好。在获得值之前，先听“ready”事件";
         //定制版setValue，对应getFormValue的值，处理表单中包含分组值的情况
         if(this.schema&&this.schema.properties){
             var props = this.schema.properties;
@@ -121,8 +141,9 @@ JSONEditor.prototype = {
         this.root.setValue(value);
         return this;
     },
+    // 验证
     validate: function(value) {
-        if (!this.ready) throw "JSON Editor not ready yet.  Listen for 'ready' event before validating";
+        if (!this.ready) throw "JSON Editor 还没有准备好。在获得值之前，先听“ready”事件";
 
         // Custom value
         if (arguments.length === 1) {
@@ -134,7 +155,7 @@ JSONEditor.prototype = {
         }
     },
     getPropTitle: function(path){
-        if (!this.ready) throw "JSON Editor not ready yet.  Listen for 'ready' event before validating";
+        if (!this.ready) throw "JSON Editor 还没有准备好。在获得值之前，先听“ready”事件";
 
         //定制方法，根据path路径root.xxx.xxx获取属性的title值。主要用户表单验证是提供字段名，拼接校验信息
         var pathPropArray = path.split(".");
@@ -156,6 +177,7 @@ JSONEditor.prototype = {
         }
         return propTitle;
     },
+    //销毁
     destroy: function() {
         if (this.destroyed) return;
         if (!this.ready) return;
@@ -176,6 +198,7 @@ JSONEditor.prototype = {
 
         this.destroyed = true;
     },
+    // 开启
     on: function(event, callback) {
         this.callbacks = this.callbacks || {};
         this.callbacks[event] = this.callbacks[event] || [];
@@ -183,6 +206,7 @@ JSONEditor.prototype = {
 
         return this;
     },
+    // 离开
     off: function(event, callback) {
         // Specific callback
         if (event && callback) {
@@ -207,6 +231,7 @@ JSONEditor.prototype = {
 
         return this;
     },
+    // 触发
     trigger: function(event) {
         if (this.callbacks && this.callbacks[event] && this.callbacks[event].length) {
             for (var i = 0; i < this.callbacks[event].length; i++) {
@@ -216,6 +241,7 @@ JSONEditor.prototype = {
 
         return this;
     },
+    // 设置选项
     setOption: function(option, value) {
         if (option === "show_errors") {
             this.options.show_errors = value;
@@ -228,6 +254,7 @@ JSONEditor.prototype = {
 
         return this;
     },
+    //获得编辑器样式
     getEditorClass: function(schema) {
         var classname;
 
@@ -248,10 +275,12 @@ JSONEditor.prototype = {
 
         return JSONEditor.defaults.editors[classname];
     },
+    // 创建样式
     createEditor: function(editor_class, options) {
         options = $extend({}, editor_class.options || {}, options);
         return new editor_class(options);
     },
+    // 在改变的时候
     onChange: function() {
         if (!this.ready) return;
 
@@ -279,6 +308,7 @@ JSONEditor.prototype = {
 
         return this;
     },
+    // 编译模板
     compileTemplate: function(template, name) {
         name = name || JSONEditor.defaults.template;
 
@@ -301,6 +331,7 @@ JSONEditor.prototype = {
 
         return engine.compile(template);
     },
+    // 
     _data: function(el, key, value) {
         // Setting data
         if (arguments.length === 3) {
@@ -322,20 +353,24 @@ JSONEditor.prototype = {
             return this.__data[el.getAttribute('data-jsoneditor-' + key)];
         }
     },
+    // 注册编辑器
     registerEditor: function(editor) {
         this.editors = this.editors || {};
         this.editors[editor.path] = editor;
         return this;
     },
+    // 销毁编辑器
     unregisterEditor: function(editor) {
         this.editors = this.editors || {};
         this.editors[editor.path] = null;
         return this;
     },
+    // 获得编辑器
     getEditor: function(path) {
         if (!this.editors) return;
         return this.editors[path];
     },
+    // 监控
     watch: function(path, callback) {
         this.watchlist = this.watchlist || {};
         this.watchlist[path] = this.watchlist[path] || [];
@@ -343,6 +378,7 @@ JSONEditor.prototype = {
 
         return this;
     },
+    // 不监控
     unwatch: function(path, callback) {
         if (!this.watchlist || !this.watchlist[path]) return this;
         // If removing all callbacks for a path
@@ -359,21 +395,26 @@ JSONEditor.prototype = {
         this.watchlist[path] = newlist.length ? newlist : null;
         return this;
     },
+    //
     notifyWatchers: function(path) {
         if (!this.watchlist || !this.watchlist[path]) return this;
         for (var i = 0; i < this.watchlist[path].length; i++) {
             this.watchlist[path][i]();
         }
     },
+    // 是否启动
     isEnabled: function() {
         return !this.root || this.root.isEnabled();
     },
+    // 启动
     enable: function() {
         this.root.enable();
     },
+    // 销毁
     disable: function() {
         this.root.disable();
     },
+    // 获得
     _getDefinitions: function(schema, path) {
         path = path || '#/definitions/';
         if (schema.definitions) {
